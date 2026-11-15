@@ -4,53 +4,126 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>JARVIS 2.0</title>
+<title>JARVIS 3.0</title>
+
 <style>
 * { box-sizing: border-box; }
+
 body {
   margin: 0;
+  padding: 25px 15px;
+  min-height: 100vh;
   background: #020817;
   color: #00d9ff;
   font-family: Arial, sans-serif;
   text-align: center;
-  min-height: 100vh;
-  padding: 25px 15px;
 }
+
 h1 {
   font-size: 38px;
   letter-spacing: 9px;
-  text-shadow: 0 0 20px #00cfff;
-  margin-top: 35px;
+  text-shadow: 0 0 25px #00cfff;
+  margin-top: 25px;
 }
-.sub { color: #70dfff; letter-spacing: 2px; }
-#clock { font-size: 20px; margin-top: 25px; }
-.core {
+
+.sub {
+  color: #79dfff;
+  letter-spacing: 3px;
+}
+
+#clock {
+  margin-top: 25px;
+  font-size: 19px;
+}
+
+.reactor {
   width: 190px;
   height: 190px;
+  margin: 40px auto;
   border: 4px solid #00d9ff;
   border-radius: 50%;
-  margin: 35px auto;
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
   font-size: 65px;
-  box-shadow: 0 0 35px #00bfff;
-  animation: pulse 2s infinite alternate;
+  position: relative;
+  box-shadow: 0 0 30px #00cfff,
+              inset 0 0 25px #007ba5;
+  animation: reactor 2s infinite alternate;
 }
-@keyframes pulse {
-  to { box-shadow: 0 0 65px #008cff; }
+
+.reactor::before {
+  content: "";
+  position: absolute;
+  inset: 12px;
+  border: 2px dashed #00d9ff;
+  border-radius: 50%;
+  animation: rotate 10s linear infinite;
 }
-#status { font-size: 18px; margin: 20px; }
+
+@keyframes reactor {
+  to {
+    box-shadow: 0 0 65px #00d9ff,
+                inset 0 0 40px #007ba5;
+  }
+}
+
+@keyframes rotate {
+  to { transform: rotate(360deg); }
+}
+
+#status {
+  font-size: 18px;
+  margin: 20px;
+}
+
+.panel {
+  max-width: 480px;
+  margin: 20px auto;
+  padding: 20px;
+  border: 1px solid #007da8;
+  border-radius: 18px;
+  background: #071a30;
+  box-shadow: 0 0 15px #003b61;
+}
+
+.panel h3 {
+  color: #00d9ff;
+  margin-top: 0;
+}
+
 #reply {
   color: white;
-  background: #071a30;
-  border: 1px solid #007da8;
-  border-radius: 15px;
-  padding: 18px;
-  min-height: 65px;
-  margin: 20px auto;
-  max-width: 500px;
+  line-height: 1.6;
+  min-height: 35px;
 }
+
+#weatherResult {
+  color: white;
+  line-height: 1.8;
+}
+
+.temp {
+  font-size: 38px;
+  color: #00d9ff;
+  font-weight: bold;
+}
+
+button {
+  padding: 13px 19px;
+  margin: 7px;
+  border-radius: 28px;
+  border: 1px solid #00d9ff;
+  background: #003b61;
+  color: white;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+button:active {
+  background: #007eaa;
+}
+
 input {
   width: 90%;
   max-width: 420px;
@@ -62,143 +135,393 @@ input {
   font-size: 16px;
   margin: 10px;
 }
-button {
-  padding: 13px 20px;
-  margin: 7px;
-  border-radius: 25px;
-  border: 1px solid #00d9ff;
-  background: #003b61;
-  color: white;
-  font-size: 15px;
+
+.small {
+  font-size: 12px;
+  color: #78aabb;
 }
-button:active { background: #007eaa; }
-.small { font-size: 12px; color: #70aabe; }
+
+a {
+  color: #00d9ff;
+}
 </style>
 </head>
+
 <body>
 
 <h1>J.A.R.V.I.S</h1>
 <p class="sub">PERSONAL AI ASSISTANT</p>
 
-<div id="clock">Loading clock...</div>
+<div id="clock">Loading...</div>
 
-<div class="core">J</div>
+<div class="reactor">J</div>
 
 <div id="status">SYSTEM ONLINE</div>
 
-<div id="reply">
-Hello! I am JARVIS. How may I assist you?
+<div class="panel">
+  <h3>JARVIS RESPONSE</h3>
+  <div id="reply">
+    Hello! I am JARVIS 3.0.
+    All systems are ready.
+  </div>
 </div>
 
-<input id="command" placeholder="Type a command here...">
+<div class="panel">
+  <h3>🌦️ LIVE WEATHER</h3>
 
-<br>
-<button onclick="runText()">SEND COMMAND</button>
-<button onclick="listen()">🎙️ SPEAK</button>
-<button onclick="greet()">ACTIVATE JARVIS</button>
+  <div id="weatherResult">
+    Weather has not been loaded yet.
+    <br>
+    Tap the button below to request your location.
+  </div>
 
-<br><br>
-<button onclick="openGemini()">OPEN GEMINI AI</button>
-<button onclick="weather()">WEATHER</button>
-<button onclick="help()">HELP</button>
+  <button onclick="getWeather()">
+    📍 GET MY WEATHER
+  </button>
 
-<p class="small">JARVIS 2.0 | SYSTEM READY</p>
+  <p class="small">
+    Location is requested only when you tap the button.
+    Weather data: Open-Meteo.
+  </p>
+</div>
+
+<div class="panel">
+  <h3>VOICE COMMAND CENTER</h3>
+
+  <input
+    id="command"
+    placeholder="Type your command..."
+  >
+
+  <br>
+
+  <button onclick="runText()">SEND COMMAND</button>
+
+  <button onclick="listen()">🎙️ SPEAK</button>
+
+  <button onclick="greet()">ACTIVATE JARVIS</button>
+</div>
+
+<div class="panel">
+  <h3>QUICK ACCESS</h3>
+
+  <button onclick="openSite('https://google.com')">
+    GOOGLE
+  </button>
+
+  <button onclick="openSite('https://youtube.com')">
+    YOUTUBE
+  </button>
+
+  <button onclick="openSite('https://gemini.google.com/')">
+    GEMINI AI
+  </button>
+</div>
+
+<p class="small">
+  J.A.R.V.I.S 3.0 | SYSTEM READY
+</p>
 
 <script>
+
+// LIVE CLOCK
+
 function updateClock() {
   document.getElementById("clock").innerText =
     new Date().toLocaleString();
 }
+
 setInterval(updateClock, 1000);
 updateClock();
 
+
+// SPEAKING SYSTEM
+
 function say(message) {
   document.getElementById("reply").innerText = message;
+
   if ("speechSynthesis" in window) {
     speechSynthesis.cancel();
+
     let speech = new SpeechSynthesisUtterance(message);
     speech.lang = "en-IN";
     speech.rate = 0.95;
     speech.pitch = 1;
+
     speechSynthesis.speak(speech);
   }
 }
 
+
+// GREETING
+
 function greet() {
-  say("Hello! JARVIS systems are online. I am ready to assist you.");
+  say("Hello! JARVIS 3.0 is online. All systems are ready.");
 }
 
-function help() {
-  say("You can ask me for the time, date, weather, open Google, open YouTube, or open Gemini.");
+
+// OPEN WEBSITES
+
+function openSite(url) {
+  window.open(url, "_blank");
 }
 
-function openGemini() {
-  window.open("https://gemini.google.com/", "_blank");
-  say("Opening Gemini AI.");
+
+// WEATHER DESCRIPTION
+
+function weatherDescription(code) {
+  const descriptions = {
+    0: "Clear sky ☀️",
+    1: "Mainly clear 🌤️",
+    2: "Partly cloudy ⛅",
+    3: "Overcast ☁️",
+    45: "Foggy 🌫️",
+    48: "Foggy 🌫️",
+    51: "Light drizzle 🌦️",
+    53: "Drizzle 🌦️",
+    55: "Heavy drizzle 🌧️",
+    61: "Light rain 🌧️",
+    63: "Rain 🌧️",
+    65: "Heavy rain 🌧️",
+    71: "Light snow ❄️",
+    73: "Snow ❄️",
+    75: "Heavy snow ❄️",
+    80: "Rain showers 🌦️",
+    81: "Rain showers 🌧️",
+    82: "Heavy showers ⛈️",
+    95: "Thunderstorm ⛈️",
+    96: "Thunderstorm with hail ⛈️",
+    99: "Severe thunderstorm ⛈️"
+  };
+
+  return descriptions[code] || "Weather condition unavailable";
 }
 
-function weather() {
-  window.open("https://www.google.com/search?q=weather+today", "_blank");
-  say("Opening the weather report.");
+
+// GET WEATHER AFTER PERMISSION
+
+function getWeather() {
+
+  const result = document.getElementById("weatherResult");
+  const status = document.getElementById("status");
+
+  if (!navigator.geolocation) {
+    result.innerText =
+      "Your browser does not support location services.";
+    return;
+  }
+
+  result.innerText = "Requesting location permission...";
+  status.innerText = "LOCATION REQUESTED";
+
+  navigator.geolocation.getCurrentPosition(
+
+    async function(position) {
+
+      const lat = position.coords.latitude;
+      const lon = position.coords.longitude;
+
+      result.innerText = "Getting live weather...";
+
+      try {
+
+        const params = new URLSearchParams({
+          latitude: lat,
+          longitude: lon,
+          current:
+            "temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m",
+          timezone: "auto"
+        });
+
+        const response = await fetch(
+          "https://api.open-meteo.com/v1/forecast?" +
+          params.toString()
+        );
+
+        if (!response.ok) {
+          throw new Error("Weather service unavailable");
+        }
+
+        const data = await response.json();
+        const current = data.current;
+
+        const description =
+          weatherDescription(current.weather_code);
+
+        result.innerHTML = `
+          <div class="temp">
+            ${current.temperature_2m}°C
+          </div>
+
+          <h3>${description}</h3>
+
+          Feels like:
+          ${current.apparent_temperature}°C
+          <br>
+
+          Humidity:
+          ${current.relative_humidity_2m}%
+          <br>
+
+          Wind speed:
+          ${current.wind_speed_10m} km/h
+          <br><br>
+
+          <span class="small">
+            Your current location
+            <br>
+            Updated: ${new Date().toLocaleTimeString()}
+          </span>
+        `;
+
+        status.innerText = "WEATHER UPDATED";
+
+        say(
+          "Weather updated. Current temperature is " +
+          current.temperature_2m +
+          " degrees Celsius. " +
+          description
+        );
+
+      } catch(error) {
+
+        result.innerText =
+          "Unable to load weather. Please check your internet and try again.";
+
+        status.innerText = "WEATHER ERROR";
+
+      }
+
+    },
+
+    function(error) {
+
+      let message = "Unable to access your location.";
+
+      if (error.code === 1) {
+        message =
+          "Location permission was denied. Allow location permission in Chrome site settings to use weather.";
+      }
+
+      if (error.code === 2) {
+        message =
+          "Your location could not be determined. Check your phone location settings.";
+      }
+
+      if (error.code === 3) {
+        message =
+          "Location request timed out. Please try again.";
+      }
+
+      result.innerText = message;
+      status.innerText = "LOCATION UNAVAILABLE";
+
+    },
+
+    {
+      enableHighAccuracy: false,
+      timeout: 15000,
+      maximumAge: 300000
+    }
+
+  );
+
 }
+
+
+// VOICE COMMANDS
 
 function runCommand(command) {
-  let c = command.toLowerCase().trim();
+
+  const c = command.toLowerCase().trim();
 
   document.getElementById("command").value = command;
 
-  if (c.includes("hello") || c.includes("hi jarvis")) {
-    say("Hello! Good to hear from you.");
+  if (
+    c.includes("hello") ||
+    c.includes("hi jarvis")
+  ) {
+    say("Hello! How can I help you?");
   }
+
   else if (c.includes("time")) {
     say("The time is " +
       new Date().toLocaleTimeString());
   }
-  else if (c.includes("date") || c.includes("today")) {
+
+  else if (
+    c.includes("date") ||
+    c.includes("today")
+  ) {
     say("Today's date is " +
       new Date().toLocaleDateString());
   }
+
   else if (c.includes("weather")) {
-    weather();
+    say("Please tap the get my weather button to allow location access.");
   }
+
   else if (c.includes("open gemini")) {
-    openGemini();
+    openSite("https://gemini.google.com/");
+    say("Opening Gemini AI.");
   }
+
   else if (c.includes("open youtube")) {
-    window.open("https://youtube.com", "_blank");
+    openSite("https://youtube.com");
     say("Opening YouTube.");
   }
+
   else if (c.includes("open google")) {
-    window.open("https://google.com", "_blank");
+    openSite("https://google.com");
     say("Opening Google.");
   }
+
   else if (c.startsWith("search ")) {
-    let query = command.substring(7);
-    window.open(
+    const query = command.substring(7);
+
+    openSite(
       "https://www.google.com/search?q=" +
-      encodeURIComponent(query), "_blank");
+      encodeURIComponent(query)
+    );
+
     say("Searching the internet.");
   }
+
   else if (c.includes("who are you")) {
-    say("I am JARVIS, your personal virtual assistant.");
+    say("I am JARVIS 3.0, your personal virtual assistant.");
   }
+
   else if (c.includes("help")) {
-    help();
+    say("You can ask for the time, date, or say open Google, open YouTube, open Gemini, or search followed by your question.");
   }
+
   else if (c.includes("thank")) {
     say("You're welcome. Always ready to help.");
   }
+
   else {
-    say("I do not know that command yet. Try saying help, or open Gemini for AI conversations.");
+    say("I do not know that command yet. Try saying help.");
   }
 }
 
+
+// TEXT COMMANDS
+
 function runText() {
-  let value = document.getElementById("command").value;
-  if (value.trim()) runCommand(value);
+
+  const value =
+    document.getElementById("command").value;
+
+  if (value.trim()) {
+    runCommand(value);
+  }
 }
 
+
+// MICROPHONE
+
 function listen() {
+
   const Recognition =
     window.SpeechRecognition ||
     window.webkitSpeechRecognition;
@@ -208,7 +531,8 @@ function listen() {
     return;
   }
 
-  let recognition = new Recognition();
+  const recognition = new Recognition();
+
   recognition.lang = "en-IN";
   recognition.interimResults = false;
 
@@ -216,27 +540,41 @@ function listen() {
     "LISTENING...";
 
   recognition.onresult = function(event) {
-    let command = event.results[0][0].transcript;
+
+    const command =
+      event.results[0][0].transcript;
+
     document.getElementById("status").innerText =
       "COMMAND RECEIVED";
+
     runCommand(command);
+
   };
 
   recognition.onerror = function() {
+
     document.getElementById("status").innerText =
       "VOICE ERROR - TRY AGAIN";
+
   };
 
   recognition.onend = function() {
-    if (document.getElementById("status").innerText
-        === "LISTENING...") {
+
+    if (
+      document.getElementById("status").innerText
+      === "LISTENING..."
+    ) {
       document.getElementById("status").innerText =
         "SYSTEM ONLINE";
     }
+
   };
 
   recognition.start();
+
 }
+
 </script>
+
 </body>
 </html>
