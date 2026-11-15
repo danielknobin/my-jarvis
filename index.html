@@ -3,523 +3,395 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>JARVIS 4.0</title>
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JARVIS ULTIMATE</title>
 <style>
 *{box-sizing:border-box}
 body{
- margin:0;padding:20px 14px;
- background:#020817;color:#00d9ff;
- font-family:Arial;text-align:center;
+ margin:0;background:#020817;color:#d9f6ff;
+ font-family:Arial,sans-serif;text-align:center;
 }
+header{padding:22px 10px;border-bottom:1px solid #087da8}
 h1{
- font-size:38px;letter-spacing:8px;
- text-shadow:0 0 25px #00cfff;
- margin-top:25px;
+ color:#00cfff;letter-spacing:5px;
+ text-shadow:0 0 15px #00bfff;
 }
-.sub{letter-spacing:3px;color:#79dfff}
-#clock{margin:22px;font-size:18px}
-.reactor{
- width:190px;height:190px;
- margin:35px auto;border:4px solid #00d9ff;
- border-radius:50%;display:flex;
- align-items:center;justify-content:center;
- font-size:65px;position:relative;
- box-shadow:0 0 35px #00cfff,inset 0 0 25px #007ba5;
- transition:.2s;
-}
-.reactor:before{
- content:"";position:absolute;inset:12px;
- border:2px dashed #00d9ff;border-radius:50%;
- animation:rotate 10s linear infinite;
-}
-.reactor.speaking{
- transform:scale(1.09);
- box-shadow:0 0 75px #00d9ff,inset 0 0 45px #008cff;
-}
-@keyframes rotate{to{transform:rotate(360deg)}}
+.sub{color:#73b9d1;font-size:12px;letter-spacing:3px}
+main{max-width:850px;margin:auto;padding:15px}
 .panel{
- max-width:500px;margin:20px auto;padding:20px;
- border:1px solid #007da8;border-radius:18px;
- background:#071a30;box-shadow:0 0 15px #003b61;
+ background:rgba(0,35,60,.65);
+ border:1px solid #087da8;border-radius:14px;
+ padding:16px;margin:13px 0;
+ box-shadow:0 0 14px #003d60;
 }
-h3{color:#00d9ff;margin-top:0}
-#reply,#weatherResult{
- color:white;line-height:1.7;
+#reactor{
+ width:155px;height:155px;border:5px solid #00cfff;
+ border-radius:50%;margin:20px auto;
+ display:flex;align-items:center;justify-content:center;
+ color:#00eaff;font-size:25px;font-weight:bold;
+ box-shadow:0 0 15px #00cfff,inset 0 0 20px #00cfff;
+ animation:pulse 2s infinite;
+}
+#reactor.speaking{animation:active .5s infinite alternate}
+@keyframes pulse{
+ 50%{box-shadow:0 0 30px #00cfff,inset 0 0 30px #00cfff}
+}
+@keyframes active{
+ to{transform:scale(1.08);box-shadow:0 0 45px #00eaff}
 }
 button{
- padding:13px 17px;margin:6px;
- border-radius:25px;border:1px solid #00d9ff;
- background:#003b61;color:white;font-size:14px;
+ background:#003d60;color:#dffaff;border:1px solid #00cfff;
+ border-radius:8px;padding:12px;margin:5px;
+ font-size:14px;cursor:pointer;
 }
-button:active{background:#007eaa}
-input{
- width:95%;padding:14px;margin:9px 0;
- border-radius:22px;border:1px solid #00d9ff;
- background:#020e20;color:white;font-size:16px;
+button:active{background:#007da8}
+input,textarea{
+ width:100%;padding:13px;margin:7px 0;
+ background:#061b2b;color:white;
+ border:1px solid #087da8;border-radius:8px;
+ font-size:15px;
 }
-.temp{font-size:38px;font-weight:bold}
-.small{font-size:12px;color:#79aabb}
+textarea{min-height:75px;resize:vertical}
 .grid{
- display:grid;grid-template-columns:1fr 1fr;
- gap:5px;
+ display:grid;grid-template-columns:repeat(2,1fr);gap:8px
 }
-.grid button{width:95%}
+.grid button{width:100%;margin:0}
+#output{min-height:45px;color:#8deaff;line-height:1.5}
+.small{font-size:12px;color:#80aabd}
+a{color:#00d9ff}
+ul{padding-left:20px;text-align:left}
+li{margin:8px 0;overflow-wrap:anywhere}
+footer{padding:20px;color:#668b9e;font-size:12px}
 </style>
 </head>
-
 <body>
+<header>
+ <h1>J.A.R.V.I.S</h1>
+ <div class="sub">JUST A RATHER VERY INTELLIGENT SYSTEM</div>
+</header>
 
-<h1>J.A.R.V.I.S</h1>
-<p class="sub">ADVANCED COMMAND CENTER</p>
+<main>
+ <section class="panel">
+  <div id="clock">Loading clock...</div>
+  <div id="reactor">J.A.R.V.I.S</div>
+  <div id="output">Systems online. Awaiting your command.</div>
+  <button onclick="startListening()">🎙️ TALK TO JARVIS</button>
+  <button onclick="speak('All systems are online. How may I assist you?')">🔊 SYSTEM CHECK</button>
+  <p class="small">Voice recognition depends on browser support and microphone permission.</p>
+ </section>
 
-<div id="clock"></div>
+ <section class="panel">
+  <h3>COMMAND CENTRE</h3>
+  <input id="command" placeholder="Type a command..." onkeydown="if(event.key==='Enter')runCommand()">
+  <button onclick="runCommand()">EXECUTE COMMAND</button>
+  <div class="grid">
+   <button onclick="getWeather()">🌤️ WEATHER</button>
+   <button onclick="showBattery()">🔋 BATTERY</button>
+   <button onclick="openSite('https://gemini.google.com')">🤖 GEMINI AI</button>
+   <button onclick="openSite('https://www.google.com')">🔎 GOOGLE</button>
+   <button onclick="openSite('https://www.youtube.com')">▶️ YOUTUBE</button>
+   <button onclick="openSite('https://www.google.com/maps')">🗺️ MAPS</button>
+   <button onclick="openSite('https://www.wikipedia.org')">📚 WIKIPEDIA</button>
+   <button onclick="openSite('https://www.google.com')">🌐 BROWSER SEARCH</button>
+  </div>
+ </section>
 
-<div class="reactor" id="reactor">J</div>
+ <section class="panel">
+  <h3>CALCULATOR</h3>
+  <input id="calc" placeholder="Example: (25 + 5) * 2">
+  <button onclick="calculate()">CALCULATE</button>
+  <div id="calcResult"></div>
+ </section>
 
-<div id="status">ALL SYSTEMS ONLINE</div>
+ <section class="panel">
+  <h3>⏰ ALARMS & REMINDERS</h3>
+  <input id="reminderText" placeholder="Reminder message">
+  <label class="small">Choose reminder date and time:</label>
+  <input id="reminderTime" type="datetime-local">
+  <button onclick="addReminder()">SET REMINDER</button>
+  <ul id="reminderList"></ul>
+ </section>
 
-<div class="panel">
-<h3>JARVIS RESPONSE</h3>
-<div id="reply">
-Hello! JARVIS 4.0 is ready to assist you.
-</div>
-</div>
+ <section class="panel">
+  <h3>📝 PERSONAL NOTES</h3>
+  <textarea id="noteText" placeholder="Write your notes here..."></textarea>
+  <button onclick="saveNote()">SAVE NOTE</button>
+  <button onclick="clearNote()">CLEAR NOTE</button>
+  <div id="noteStatus" class="small"></div>
+ </section>
 
-<div class="panel">
-<h3>🎙️ VOICE COMMAND CENTER</h3>
-<input id="command" placeholder="Type your command...">
-<button onclick="runText()">SEND</button>
-<button onclick="listen()">🎙️ SPEAK</button>
-<button onclick="greet()">ACTIVATE</button>
-</div>
+ <section class="panel">
+  <h3>📜 COMMAND HISTORY</h3>
+  <ul id="history"></ul>
+  <button onclick="clearHistory()">CLEAR HISTORY</button>
+ </section>
+</main>
 
-<div class="panel">
-<h3>🧮 SMART CALCULATOR</h3>
-<input id="calcInput" placeholder="Example: 25 + 15">
-<button onclick="calculate()">CALCULATE</button>
-<div id="calcResult">Waiting for calculation...</div>
-</div>
-
-<div class="panel">
-<h3>🌦️ LIVE WEATHER</h3>
-<div id="weatherResult">
-Weather not loaded.
-<br>Location permission is requested only when you tap the button.
-</div>
-<button onclick="getWeather()">📍 GET MY WEATHER</button>
-</div>
-
-<div class="panel">
-<h3>⚡ QUICK COMMANDS</h3>
-<div class="grid">
-<button onclick="openSite('https://google.com')">GOOGLE</button>
-<button onclick="openSite('https://youtube.com')">YOUTUBE</button>
-<button onclick="openSite('https://gemini.google.com/')">GEMINI AI</button>
-<button onclick="openSite('https://wikipedia.org')">WIKIPEDIA</button>
-<button onclick="openSite('https://maps.google.com')">GOOGLE MAPS</button>
-<button onclick="getWeather()">WEATHER</button>
-</div>
-</div>
-
-<div class="panel">
-<h3>COMMAND GUIDE</h3>
-<p class="small">
-Hello Jarvis<br>
-What is the time?<br>
-What is today's date?<br>
-Who are you?<br>
-Calculate 25 plus 15<br>
-Open Google<br>
-Open YouTube<br>
-Open Gemini<br>
-Search Iron Man<br>
-Weather
-</p>
-</div>
-
-<p class="small">J.A.R.V.I.S 4.0 | SYSTEM ONLINE</p>
+<footer>JARVIS ULTIMATE • Personal browser assistant</footer>
 
 <script>
+const $ = id => document.getElementById(id);
 
-// CLOCK
+function show(message){
+ $("output").textContent=message;
+}
+function speak(message){
+ show(message);
+ if(!("speechSynthesis" in window))return;
+ speechSynthesis.cancel();
+ const utterance=new SpeechSynthesisUtterance(message);
+ utterance.lang="en-IN";
+ utterance.rate=0.95;
+ utterance.pitch=0.85;
+ utterance.onstart=()=> $("reactor").classList.add("speaking");
+ utterance.onend=()=> $("reactor").classList.remove("speaking");
+ speechSynthesis.speak(utterance);
+}
 
 function updateClock(){
- document.getElementById("clock").innerText=
- new Date().toLocaleString();
+ $("clock").textContent=new Date().toLocaleString("en-IN",{
+  weekday:"long",day:"numeric",month:"long",
+  year:"numeric",hour:"2-digit",minute:"2-digit",second:"2-digit"
+ });
 }
 setInterval(updateClock,1000);
 updateClock();
 
+function openSite(url){window.open(url,"_blank","noopener");}
 
-// VOICE AND REACTOR
-
-function say(message){
- document.getElementById("reply").innerText=message;
- const reactor=document.getElementById("reactor");
-
- if("speechSynthesis" in window){
-  speechSynthesis.cancel();
-
-  const speech=new SpeechSynthesisUtterance(message);
-  speech.lang="en-IN";
-  speech.rate=0.95;
-  speech.pitch=1;
-
-  speech.onstart=()=>reactor.classList.add("speaking");
-  speech.onend=()=>reactor.classList.remove("speaking");
-  speech.onerror=()=>reactor.classList.remove("speaking");
-
-  speechSynthesis.speak(speech);
- }
+function addHistory(text){
+ let items=JSON.parse(localStorage.getItem("jarvisHistory")||"[]");
+ items.unshift(text+" — "+new Date().toLocaleTimeString());
+ items=items.slice(0,20);
+ localStorage.setItem("jarvisHistory",JSON.stringify(items));
+ renderHistory();
 }
-
-function greet(){
- say("Hello! JARVIS 4.0 is online. All systems are ready.");
+function renderHistory(){
+ const items=JSON.parse(localStorage.getItem("jarvisHistory")||"[]");
+ $("history").innerHTML="";
+ items.forEach(item=>{
+  const li=document.createElement("li");
+  li.textContent=item;
+  $("history").appendChild(li);
+ });
 }
-
-
-// SHORTCUTS
-
-function openSite(url){
- window.open(url,"_blank");
+function clearHistory(){
+ localStorage.removeItem("jarvisHistory");
+ renderHistory();
 }
+renderHistory();
 
-
-// CALCULATOR
-
-function calculate(){
- const input=document.getElementById("calcInput").value;
- const output=document.getElementById("calcResult");
-
- try{
-  const result=safeCalculate(input);
-
-  if(!Number.isFinite(result)){
-   throw new Error("Invalid result");
-  }
-
-  output.innerText="RESULT: "+result;
-  say("The answer is "+result);
-
- }catch(e){
-  output.innerText="Please enter a valid calculation.";
-  say("I could not calculate that. Please check your numbers.");
- }
-}
-
-function safeCalculate(expression){
- const tokens=expression.match(/\d+(?:\.\d+)?|[+\-*/()%]/g);
-
- if(!tokens || tokens.join("")!==expression.replace(/\s/g,"")){
-  throw new Error("Invalid expression");
- }
-
- let position=0;
-
- function factor(){
-  const token=tokens[position++];
-
-  if(token==="+") return factor();
-  if(token==="-") return -factor();
-
-  if(token==="("){
-   const value=addition();
-   if(tokens[position++]!==")") throw new Error("Bracket");
-   return value;
-  }
-
-  if(token==="%"){
-   throw new Error("Invalid percentage");
-  }
-
-  const value=Number(token);
-  if(!Number.isFinite(value)) throw new Error("Number");
-  return value;
- }
-
- function term(){
-  let value=factor();
-
-  while(position<tokens.length){
-   const op=tokens[position];
-   if(op!=="*" && op!=="/" && op!=="%") break;
-   position++;
-   const next=factor();
-
-   if(op==="*") value*=next;
-   if(op==="/") value/=next;
-   if(op==="%") value%=next;
-  }
-
-  return value;
- }
-
- function addition(){
-  let value=term();
-
-  while(position<tokens.length){
-   const op=tokens[position];
-   if(op!=="+" && op!=="-") break;
-   position++;
-   const next=term();
-   value=op==="+"?value+next:value-next;
-  }
-
-  return value;
- }
-
- const result=addition();
- if(position!==tokens.length) throw new Error("Invalid");
- return result;
-}
-
-
-// WEATHER
-
-function weatherDescription(code){
- const descriptions={
-  0:"Clear sky ☀️",
-  1:"Mainly clear 🌤️",
-  2:"Partly cloudy ⛅",
-  3:"Overcast ☁️",
-  45:"Foggy 🌫️",
-  48:"Foggy 🌫️",
-  51:"Light drizzle 🌦️",
-  53:"Drizzle 🌦️",
-  55:"Heavy drizzle 🌧️",
-  61:"Light rain 🌧️",
-  63:"Rain 🌧️",
-  65:"Heavy rain 🌧️",
-  71:"Light snow ❄️",
-  73:"Snow ❄️",
-  75:"Heavy snow ❄️",
-  80:"Rain showers 🌦️",
-  81:"Rain showers 🌧️",
-  82:"Heavy showers ⛈️",
-  95:"Thunderstorm ⛈️",
-  96:"Thunderstorm with hail ⛈️",
-  99:"Severe thunderstorm ⛈️"
- };
- return descriptions[code]||"Weather unavailable";
-}
-
-function getWeather(){
-
- const result=document.getElementById("weatherResult");
- document.getElementById("status").innerText="REQUESTING LOCATION";
-
- if(!navigator.geolocation){
-  result.innerText="Location is not supported.";
-  return;
- }
-
- result.innerText="Requesting location permission...";
-
- navigator.geolocation.getCurrentPosition(
-
-  async function(position){
-
-   result.innerText="Loading weather...";
-
-   try{
-    const params=new URLSearchParams({
-     latitude:position.coords.latitude,
-     longitude:position.coords.longitude,
-     current:"temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m",
-     timezone:"auto"
-    });
-
-    const response=await fetch(
-     "https://api.open-meteo.com/v1/forecast?"+
-     params.toString()
-    );
-
-    if(!response.ok) throw new Error("Weather error");
-
-    const data=await response.json();
-    const w=data.current;
-    const description=weatherDescription(w.weather_code);
-
-    result.innerHTML=`
-     <div class="temp">${w.temperature_2m}°C</div>
-     <h3>${description}</h3>
-     Feels like: ${w.apparent_temperature}°C<br>
-     Humidity: ${w.relative_humidity_2m}%<br>
-     Wind: ${w.wind_speed_10m} km/h<br><br>
-     <span class="small">
-     Updated: ${new Date().toLocaleTimeString()}
-     </span>
-    `;
-
-    document.getElementById("status").innerText="WEATHER UPDATED";
-    say("Weather updated. Temperature is "+
-    w.temperature_2m+" degrees Celsius. "+description);
-
-   }catch(error){
-    result.innerText="Weather service unavailable. Try again.";
-   }
-  },
-
-  function(error){
-   let message="Unable to access location.";
-
-   if(error.code===1){
-    message="Location permission denied. Allow it in Chrome settings.";
-   }else if(error.code===2){
-    message="Location unavailable. Check phone location settings.";
-   }else if(error.code===3){
-    message="Location request timed out. Try again.";
-   }
-
-   result.innerText=message;
-   document.getElementById("status").innerText="LOCATION ERROR";
-  },
-
-  {
-   enableHighAccuracy:false,
-   timeout:15000,
-   maximumAge:300000
-  }
- );
-}
-
-
-// VOICE COMMANDS
-
-function runCommand(command){
-
- const c=command.toLowerCase().trim();
-
- document.getElementById("command").value=command;
+function runCommand(){
+ const text=$("command").value.trim();
+ if(!text)return;
+ $("command").value="";
+ addHistory(text);
+ const c=text.toLowerCase();
 
  if(c.includes("hello")||c.includes("hi jarvis")){
-  greet();
- }
-
- else if(c.includes("time")){
-  say("The time is "+new Date().toLocaleTimeString());
- }
-
- else if(c.includes("date")||c.includes("today")){
-  say("Today's date is "+new Date().toLocaleDateString());
- }
-
- else if(c.includes("who are you")){
-  say("I am JARVIS 4.0, your personal virtual assistant.");
- }
-
- else if(c.includes("weather")){
-  say("Tap the weather button to request your location and get the weather.");
- }
-
- else if(c.includes("calculate")||c.includes("what is")&&/\d/.test(c)){
-  let expression=c
-   .replace("calculate","")
-   .replace("what is","")
-   .replace(/plus/g,"+")
-   .replace(/minus/g,"-")
-   .replace(/multiplied by/g,"*")
-   .replace(/times/g,"*")
-   .replace(/divided by/g,"/");
-
-  document.getElementById("calcInput").value=expression;
-  calculate();
- }
-
- else if(c.includes("open gemini")){
-  openSite("https://gemini.google.com/");
-  say("Opening Gemini.");
- }
-
- else if(c.includes("open youtube")){
-  openSite("https://youtube.com");
-  say("Opening YouTube.");
- }
-
- else if(c.includes("open google")){
-  openSite("https://google.com");
-  say("Opening Google.");
- }
-
- else if(c.includes("open maps")){
-  openSite("https://maps.google.com");
-  say("Opening Google Maps.");
- }
-
- else if(c.includes("open wikipedia")){
-  openSite("https://wikipedia.org");
-  say("Opening Wikipedia.");
- }
-
- else if(c.startsWith("search ")){
-  const query=command.substring(7);
-  openSite("https://www.google.com/search?q="+
-  encodeURIComponent(query));
-  say("Searching the internet.");
- }
-
- else if(c.includes("help")){
-  say("Try asking for the time, date, weather, or say calculate followed by a maths problem. You can also open websites.");
- }
-
- else if(c.includes("thank")){
-  say("You're welcome. Always ready to help.");
- }
-
- else{
-  say("I do not know that command yet. Try saying help.");
+  speak("Hello. JARVIS systems are ready.");
+ }else if(c.includes("time")){
+  speak("The time is "+new Date().toLocaleTimeString());
+ }else if(c.includes("date")){
+  speak("Today is "+new Date().toDateString());
+ }else if(c.includes("weather")){
+  getWeather();
+ }else if(c.includes("battery")){
+  showBattery();
+ }else if(c.includes("calculator")){
+  speak("Open the calculator section and enter your calculation.");
+ }else if(c.includes("youtube")){
+  openSite("https://www.youtube.com");
+  speak("Opening YouTube.");
+ }else if(c.includes("google")){
+  openSite("https://www.google.com");
+  speak("Opening Google.");
+ }else if(c.includes("gemini")){
+  openSite("https://gemini.google.com");
+  speak("Opening Gemini.");
+ }else if(c.includes("maps")){
+  openSite("https://www.google.com/maps");
+  speak("Opening Maps.");
+ }else if(c.includes("wikipedia")){
+  openSite("https://www.wikipedia.org");
+  speak("Opening Wikipedia.");
+ }else if(c.includes("search")){
+  const query=text.replace(/search/i,"").trim();
+  if(query)openSite("https://www.google.com/search?q="+encodeURIComponent(query));
+  speak("Searching the web.");
+ }else if(c.includes("system status")){
+  speak("All available JARVIS systems are operational.");
+ }else{
+  speak("I can handle my built-in commands. For general AI conversations, please open Gemini using the Gemini button.");
  }
 }
 
-
-// TEXT COMMANDS
-
-function runText(){
- const value=document.getElementById("command").value;
- if(value.trim()) runCommand(value);
-}
-
-
-// MICROPHONE
-
-function listen(){
-
- const Recognition=
- window.SpeechRecognition||window.webkitSpeechRecognition;
-
- if(!Recognition){
-  say("Voice recognition is not supported in this browser.");
+let recognition;
+function startListening(){
+ const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition;
+ if(!SpeechRecognition){
+  speak("Voice recognition is not supported in this browser. Please try Chrome.");
   return;
  }
-
- const recognition=new Recognition();
+ recognition=new SpeechRecognition();
  recognition.lang="en-IN";
  recognition.interimResults=false;
-
- document.getElementById("status").innerText="LISTENING...";
-
- recognition.onresult=function(event){
-  const command=event.results[0][0].transcript;
-  document.getElementById("status").innerText="COMMAND RECEIVED";
-  runCommand(command);
+ recognition.maxAlternatives=1;
+ recognition.onstart=()=>show("Listening...");
+ recognition.onresult=e=>{
+  $("command").value=e.results[0][0].transcript;
+  runCommand();
  };
-
- recognition.onerror=function(){
-  document.getElementById("status").innerText="VOICE ERROR";
- };
-
- recognition.onend=function(){
-  if(document.getElementById("status").innerText==="LISTENING..."){
-   document.getElementById("status").innerText="SYSTEM ONLINE";
-  }
- };
-
+ recognition.onerror=()=>show("Microphone or speech recognition error. Check browser permission.");
+ recognition.onend=()=> $("reactor").classList.remove("speaking");
  recognition.start();
 }
 
-</script>
+async function getWeather(){
+ if(!navigator.geolocation){
+  speak("Location is not supported by this browser.");
+  return;
+ }
+ show("Requesting your location permission...");
+ navigator.geolocation.getCurrentPosition(async position=>{
+  try{
+   const lat=position.coords.latitude;
+   const lon=position.coords.longitude;
+   const url=`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m`;
+   const response=await fetch(url);
+   if(!response.ok)throw new Error("Weather service unavailable");
+   const data=await response.json();
+   const w=data.current;
+   const message=`Current temperature: ${w.temperature_2m} degrees Celsius. Feels like ${w.apparent_temperature} degrees. Humidity ${w.relative_humidity_2m} percent. Wind speed ${w.wind_speed_10m} kilometres per hour.`;
+   speak(message);
+  }catch(error){speak("Sorry, I could not retrieve weather information.");}
+ },()=>{
+  speak("Location permission was not granted. You can allow it in your browser site settings.");
+ },{enableHighAccuracy:false,timeout:15000});
+}
 
+async function showBattery(){
+ if(!navigator.getBattery){
+  speak("Battery information is not supported by this browser.");
+  return;
+ }
+ try{
+  const battery=await navigator.getBattery();
+  const level=Math.round(battery.level*100);
+  speak("Your battery level is "+level+" percent. "+(battery.charging?"The device is charging.":"The device is not charging."));
+ }catch(e){speak("Battery information is unavailable.");}
+}
+
+/* Safe calculator: supports numbers and + - * / parentheses and decimals */
+function calculate(){
+ const input=$("calc").value.trim();
+ try{
+  const tokens=input.match(/\d+(?:\.\d+)?|[()+*/-]/g);
+  if(!tokens||tokens.join("")!==input.replace(/\s/g,""))throw Error();
+  let i=0;
+  function expression(){
+   let value=term();
+   while(tokens[i]==="+"||tokens[i]==="-"){
+    const op=tokens[i++];
+    const next=term();
+    value=op==="+"?value+next:value-next;
+   }
+   return value;
+  }
+  function term(){
+   let value=factor();
+   while(tokens[i]==="*"||tokens[i]==="/"){
+    const op=tokens[i++];
+    const next=factor();
+    if(op==="/"&&next===0)throw Error();
+    value=op==="*"?value*next:value/next;
+   }
+   return value;
+  }
+  function factor(){
+   if(tokens[i]==="-"){i++;return -factor();}
+   if(tokens[i]==="+"){i++;return factor();}
+   if(tokens[i]==="("){
+    i++;const value=expression();
+    if(tokens[i++]!==")")throw Error();
+    return value;
+   }
+   const value=Number(tokens[i++]);
+   if(!Number.isFinite(value))throw Error();
+   return value;
+  }
+  const result=expression();
+  if(i!==tokens.length||!Number.isFinite(result))throw Error();
+  $("calcResult").textContent="Result: "+result;
+  speak("The answer is "+result);
+ }catch(e){
+  $("calcResult").textContent="Please enter a valid calculation.";
+ }
+}
+
+/* Reminders */
+let reminders=JSON.parse(localStorage.getItem("jarvisReminders")||"[]");
+function renderReminders(){
+ $("reminderList").innerHTML="";
+ reminders.forEach((r,index)=>{
+  const li=document.createElement("li");
+  li.textContent=r.text+" — "+new Date(r.time).toLocaleString();
+  const btn=document.createElement("button");
+  btn.textContent="Delete";
+  btn.onclick=()=>{reminders.splice(index,1);saveReminders();};
+  li.appendChild(btn);
+  $("reminderList").appendChild(li);
+ });
+}
+function saveReminders(){
+ localStorage.setItem("jarvisReminders",JSON.stringify(reminders));
+ renderReminders();
+}
+async function addReminder(){
+ const text=$("reminderText").value.trim();
+ const time=new Date($("reminderTime").value).getTime();
+ if(!text||!Number.isFinite(time)||time<=Date.now()){
+  speak("Please enter a reminder and a future date and time.");
+  return;
+ }
+ if("Notification" in window && Notification.permission==="default"){
+  try{await Notification.requestPermission();}catch(e){}
+ }
+ reminders.push({text,time});
+ saveReminders();
+ $("reminderText").value="";
+ $("reminderTime").value="";
+ speak("Reminder saved. Keep this page open for the reminder.");
+}
+setInterval(()=>{
+ const now=Date.now();
+ const due=reminders.filter(r=>r.time<=now);
+ if(!due.length)return;
+ due.forEach(r=>{
+  speak("Reminder: "+r.text);
+  if("Notification" in window && Notification.permission==="granted"){
+   new Notification("JARVIS Reminder",{body:r.text});
+  }
+ });
+ reminders=reminders.filter(r=>r.time>now);
+ saveReminders();
+},1000);
+renderReminders();
+
+/* Notes */
+$("noteText").value=localStorage.getItem("jarvisNote")||"";
+function saveNote(){
+ localStorage.setItem("jarvisNote",$("noteText").value);
+ $("noteStatus").textContent="Note saved on this browser.";
+ speak("Your note has been saved.");
+}
+function clearNote(){
+ $("noteText").value="";
+ localStorage.removeItem("jarvisNote");
+ $("noteStatus").textContent="Note cleared.";
+}
+
+speak("JARVIS Ultimate is online. All available systems are ready.");
+</script>
 </body>
 </html>
