@@ -1,71 +1,201 @@
 
-<!DOCTYPE html>n
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>JARVIS AI</title>
+<title>JARVIS 2.0</title>
 <style>
+* { box-sizing: border-box; }
 body {
   margin: 0;
   background: #020817;
-  color: #00cfff;
-  font-family: Arial;
+  color: #00d9ff;
+  font-family: Arial, sans-serif;
   text-align: center;
+  min-height: 100vh;
+  padding: 25px 15px;
 }
 h1 {
-  margin-top: 55px;
-  letter-spacing: 8px;
+  font-size: 38px;
+  letter-spacing: 9px;
   text-shadow: 0 0 20px #00cfff;
+  margin-top: 35px;
 }
-.circle {
+.sub { color: #70dfff; letter-spacing: 2px; }
+#clock { font-size: 20px; margin-top: 25px; }
+.core {
   width: 190px;
   height: 190px;
-  border: 4px solid #00cfff;
+  border: 4px solid #00d9ff;
   border-radius: 50%;
-  margin: 45px auto;
-  box-shadow: 0 0 30px #00cfff;
+  margin: 35px auto;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 55px;
-  animation: glow 2s infinite alternate;
+  font-size: 65px;
+  box-shadow: 0 0 35px #00bfff;
+  animation: pulse 2s infinite alternate;
 }
-@keyframes glow {
-  to { box-shadow: 0 0 55px #008cff; }
+@keyframes pulse {
+  to { box-shadow: 0 0 65px #008cff; }
+}
+#status { font-size: 18px; margin: 20px; }
+#reply {
+  color: white;
+  background: #071a30;
+  border: 1px solid #007da8;
+  border-radius: 15px;
+  padding: 18px;
+  min-height: 65px;
+  margin: 20px auto;
+  max-width: 500px;
+}
+input {
+  width: 90%;
+  max-width: 420px;
+  padding: 15px;
+  border-radius: 25px;
+  border: 1px solid #00d9ff;
+  background: #071a30;
+  color: white;
+  font-size: 16px;
+  margin: 10px;
 }
 button {
+  padding: 13px 20px;
+  margin: 7px;
+  border-radius: 25px;
+  border: 1px solid #00d9ff;
   background: #003b61;
   color: white;
-  border: 1px solid #00cfff;
-  padding: 15px 25px;
-  border-radius: 25px;
-  margin: 10px;
-  font-size: 16px;
+  font-size: 15px;
 }
-#reply { padding: 20px; }
+button:active { background: #007eaa; }
+.small { font-size: 12px; color: #70aabe; }
 </style>
 </head>
 <body>
 
 <h1>J.A.R.V.I.S</h1>
-<p>JUST A RATHER VERY INTELLIGENT SYSTEM</p>
+<p class="sub">PERSONAL AI ASSISTANT</p>
 
-<div class="circle">J</div>
+<div id="clock">Loading clock...</div>
 
-<h3 id="reply">SYSTEM ONLINE</h3>
+<div class="core">J</div>
 
-<button onclick="speak()">ACTIVATE JARVIS</button>
+<div id="status">SYSTEM ONLINE</div>
+
+<div id="reply">
+Hello! I am JARVIS. How may I assist you?
+</div>
+
+<input id="command" placeholder="Type a command here...">
+
+<br>
+<button onclick="runText()">SEND COMMAND</button>
 <button onclick="listen()">🎙️ SPEAK</button>
+<button onclick="greet()">ACTIVATE JARVIS</button>
+
+<br><br>
+<button onclick="openGemini()">OPEN GEMINI AI</button>
+<button onclick="weather()">WEATHER</button>
+<button onclick="help()">HELP</button>
+
+<p class="small">JARVIS 2.0 | SYSTEM READY</p>
 
 <script>
-function speak() {
-  say("Hello! I am Jarvis. All systems are online.");
+function updateClock() {
+  document.getElementById("clock").innerText =
+    new Date().toLocaleString();
 }
+setInterval(updateClock, 1000);
+updateClock();
 
 function say(message) {
   document.getElementById("reply").innerText = message;
-  let speech = new SpeechSynthesisUtterance(message);
-  speechSynthesis.speak(speech);
+  if ("speechSynthesis" in window) {
+    speechSynthesis.cancel();
+    let speech = new SpeechSynthesisUtterance(message);
+    speech.lang = "en-IN";
+    speech.rate = 0.95;
+    speech.pitch = 1;
+    speechSynthesis.speak(speech);
+  }
+}
+
+function greet() {
+  say("Hello! JARVIS systems are online. I am ready to assist you.");
+}
+
+function help() {
+  say("You can ask me for the time, date, weather, open Google, open YouTube, or open Gemini.");
+}
+
+function openGemini() {
+  window.open("https://gemini.google.com/", "_blank");
+  say("Opening Gemini AI.");
+}
+
+function weather() {
+  window.open("https://www.google.com/search?q=weather+today", "_blank");
+  say("Opening the weather report.");
+}
+
+function runCommand(command) {
+  let c = command.toLowerCase().trim();
+
+  document.getElementById("command").value = command;
+
+  if (c.includes("hello") || c.includes("hi jarvis")) {
+    say("Hello! Good to hear from you.");
+  }
+  else if (c.includes("time")) {
+    say("The time is " +
+      new Date().toLocaleTimeString());
+  }
+  else if (c.includes("date") || c.includes("today")) {
+    say("Today's date is " +
+      new Date().toLocaleDateString());
+  }
+  else if (c.includes("weather")) {
+    weather();
+  }
+  else if (c.includes("open gemini")) {
+    openGemini();
+  }
+  else if (c.includes("open youtube")) {
+    window.open("https://youtube.com", "_blank");
+    say("Opening YouTube.");
+  }
+  else if (c.includes("open google")) {
+    window.open("https://google.com", "_blank");
+    say("Opening Google.");
+  }
+  else if (c.startsWith("search ")) {
+    let query = command.substring(7);
+    window.open(
+      "https://www.google.com/search?q=" +
+      encodeURIComponent(query), "_blank");
+    say("Searching the internet.");
+  }
+  else if (c.includes("who are you")) {
+    say("I am JARVIS, your personal virtual assistant.");
+  }
+  else if (c.includes("help")) {
+    help();
+  }
+  else if (c.includes("thank")) {
+    say("You're welcome. Always ready to help.");
+  }
+  else {
+    say("I do not know that command yet. Try saying help, or open Gemini for AI conversations.");
+  }
+}
+
+function runText() {
+  let value = document.getElementById("command").value;
+  if (value.trim()) runCommand(value);
 }
 
 function listen() {
@@ -80,14 +210,33 @@ function listen() {
 
   let recognition = new Recognition();
   recognition.lang = "en-IN";
+  recognition.interimResults = false;
+
+  document.getElementById("status").innerText =
+    "LISTENING...";
+
   recognition.onresult = function(event) {
     let command = event.results[0][0].transcript;
-    say("You said " + command);
+    document.getElementById("status").innerText =
+      "COMMAND RECEIVED";
+    runCommand(command);
   };
+
+  recognition.onerror = function() {
+    document.getElementById("status").innerText =
+      "VOICE ERROR - TRY AGAIN";
+  };
+
+  recognition.onend = function() {
+    if (document.getElementById("status").innerText
+        === "LISTENING...") {
+      document.getElementById("status").innerText =
+        "SYSTEM ONLINE";
+    }
+  };
+
   recognition.start();
 }
-
 </script>
 </body>
-  </html>
-  
+</html>
